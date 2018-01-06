@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+    <title>PixiTest</title>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.2.2/pixi.min.js"></script>-->
+    <script type="text/javascript" src="js/pixi.js"></script>
+    </head>
+<body>
+<script>
+     var Container = PIXI.Container,
+        autoDetectRenderer = PIXI.autoDetectRenderer,
+        loader = PIXI.loader,
+        resources = PIXI.loader.resources,
+        TextureCache = PIXI.utils.TextureCache,
+        Texture = PIXI.Texture,
+        Sprite = PIXI.Sprite;
+
+    //Create a Pixi stage and renderer and add the
+    //renderer.view to the DOM
+    var stage = new Container(),
+        renderer = autoDetectRenderer(512, 512);
+    document.body.appendChild(renderer.view);
+
+    //load a JSON file and run the `setup` function when it's done
+    loader
+        .add([{url:"images/dungeon.png"},
+            {url:'images/explorer.png'},
+            {url:'images/treasure.png'}])
+        .load(setup);
+
+    //Define variables that might be used in more
+    //than one function
+    var dungeon, explorer, treasure, door, id,state;
+
+    function setup() {
+
+        //There are 3 ways to make sprites from textures atlas frames
+
+        //1. Access the `TextureCache` directly
+        var dungeonTexture = TextureCache["images/dungeon.png"];
+        dungeon = new Sprite(dungeonTexture);
+        stage.addChild(dungeon);//背景
+
+        var exploreTexture = TextureCache["images/explorer.png"];
+        explorer = new Sprite(exploreTexture);
+        explorer.x = 68;
+        explorer.y = stage.height / 2 - explorer.height / 2;
+        stage.addChild(explorer);//主角
+
+        // id = PIXI.loader.resources["images/treasureHunter.json"].textures;
+        // treasure = new PIXI.Sprite(id["images/treasure.png"]);
+        var treasureTexture = TextureCache["images/treasure.png"];
+        treasure = new Sprite(treasureTexture);
+        //Position the treasure next to the right edge of the canvas
+        treasure.x = stage.width - treasure.width - 48;
+        treasure.y = stage.height / 2 - treasure.height / 2;
+        stage.addChild(treasure);//宝藏
+		
+		state=play;
+		
+		gameLoop();
+
+
+    }
+	
+function gameLoop(){
+
+    //Loop this function 60 times per second
+    requestAnimationFrame(gameLoop);
+
+    state();
+    //Render the stage
+    renderer.render(stage);
+}
+function play(){
+    explorer.vx = 1;
+    explorer.vy = -1;
+    //Move the cat 1 pixel per frame
+    explorer.x += explorer.vx;
+    explorer.y += explorer.vy;
+}
+
+</script>
+
+</body>
+</html>
